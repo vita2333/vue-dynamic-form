@@ -31,6 +31,7 @@ export interface BaseField {
     placeholder?: string
     depends?: string[]
     dependsFunc?: (values: string[]) => boolean | null
+    component?: (() => {}) | string
 }
 
 export interface KeyValue {

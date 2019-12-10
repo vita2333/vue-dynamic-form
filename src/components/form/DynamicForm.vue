@@ -2,10 +2,11 @@
     <div>
         <a-form v-if="form" id="dynamic-form" :form="form" @submit="handleSubmit">
           <a-form-item :label="field.label" :extra="field.desc"  :key="key" v-for="(field, key) in fields">
-            <component
-              v-decorator="['text',{initialValue:`${defaultFormValues[key]}`,...field.options}]"
-              :is="componentMap[field.type]"
-            ></component>
+            <dynamic-form-item
+            :field="field"
+            :key="key"
+            :field-key="key"
+            ></dynamic-form-item>
           </a-form-item>
             <slot name="footer"></slot>
             <a-form-item :wrapper-col="{ span: 12, offset: 6 }">
@@ -31,7 +32,7 @@ import { WrappedFormUtils } from 'ant-design-vue/types/form/form'
 import { Col, message, Row } from 'ant-design-vue'
 // eslint-disable-next-line import/extensions,import/no-unresolved
 import { FormItem } from 'ant-design-vue/types/form/form-item'
-import _ from 'lodash'
+import DynamicFormItem from '@/components/form/DynamicFormItem.vue';
 import { AntField, BaseField, Fields } from '@/lib/types/common'
 import { FieldTypes } from '@/lib/types/enum'
 import InputPicker from './advanced/InputPicker.vue'
@@ -50,7 +51,6 @@ import { messages } from '@/components/form/messages-zh'
 interface DefaultLayout {
     formItem: FormItem
 }
-
 export type DynamicFormLayout = InlineLayout | DefaultLayout
 /**
  * 组件必须有:prop:value 和 emit('change')
@@ -64,17 +64,8 @@ export type DynamicFormLayout = InlineLayout | DefaultLayout
  */
 @Component({
   components: {
-    InputText,
-    // InputImg,
-    // InputCode,
-    // Checker,
-    // Checkers,
-    InputSwitch,
-    InputPicker,
-    InputEditor,
-    InputRadio,
-    InputTree,
-    InputCheckers,
+
+    DynamicFormItem,
   },
 })
 export default class DynamicForm extends Vue {
@@ -99,33 +90,6 @@ export default class DynamicForm extends Vue {
     readonly btnLoading!: boolean
 
     form: Vue | WrappedFormUtils | null = null
-
-    get componentMap() {
-      return {
-        [FieldTypes.text]: 'AInput',
-        // [FieldTypes.number]: 'InputText',
-        // [FieldTypes.textarea]: 'InputText',
-        // [FieldTypes.password]: 'InputText',
-        // [FieldTypes.picker]: 'InputPicker',
-        // [FieldTypes.pickers]: 'InputPicker',
-        // [FieldTypes.pickerTags]: 'InputPicker',
-        // [FieldTypes.search]: 'InputPicker',
-        // [FieldTypes.date]: 'InputTimer',
-        // [FieldTypes.time]: 'InputTimer',
-        // [FieldTypes.datetime]: 'InputTimer',
-        // [FieldTypes.year]: 'InputTimer',
-        // [FieldTypes.radio]: 'InputRadio',
-        // [FieldTypes.checkers]: 'InputCheckers',
-        // [FieldTypes.switch]: 'InputSwitch',
-        // [FieldTypes.img]: 'InputImg',
-        // [FieldTypes.video]: 'InputImg',
-        // [FieldTypes.code]: 'InputCode',
-        // [FieldTypes.contact]: 'InputContact',
-        // [FieldTypes.address]: 'InputAddress',
-        // [FieldTypes.editor]: 'InputEditor',
-        // [FieldTypes.tree]: 'InputTree',
-      }
-    }
 
     created() {
       this.form = this.$form.createForm(this, {
@@ -158,21 +122,6 @@ export default class DynamicForm extends Vue {
 
     getForm() {
       return this.form as WrappedFormUtils
-    }
-
-    private isDependAvailable(field: BaseField) {
-      const dependsValues = Object.values(this.getForm().getFieldsValue(field.depends))
-      if (field.dependsFunc) {
-        return field.dependsFunc(dependsValues)
-      }
-      let available = true
-      for (const i of dependsValues) {
-        if (_.isEmpty(i) || i === '') {
-          available = false
-        }
-      }
-
-      return available
     }
 }
 </script>

@@ -19,6 +19,7 @@ export const enum FieldTypes {
     video = 'video',
     editor = 'editor',
     group = 'group',
+    custom = 'custom',
 }
 
 export const enum ViewTypes {
