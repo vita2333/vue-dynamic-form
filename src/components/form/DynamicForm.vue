@@ -1,13 +1,13 @@
 <template>
-    <div>
         <a-form v-if="form" id="dynamic-form" :form="form" @submit="handleSubmit">
-          <a-form-item :label="field.label" :extra="field.desc"  :key="key" v-for="(field, key) in fields">
-            <dynamic-form-item
-            :field="field"
-            :key="key"
-            :field-key="key"
-            ></dynamic-form-item>
-          </a-form-item>
+            <component
+              v-for="(field, key) in fields"
+              :field="field"
+              :key="key"
+              :is="componentMap[field.type]"
+              :fieldDefaultValue="defaultFormValues[key]"
+              :field-key="key"
+            ></component>
             <slot name="footer"></slot>
             <a-form-item :wrapper-col="{ span: 12, offset: 6 }">
                 <slot name="button">
@@ -20,54 +20,24 @@
                 </slot>
             </a-form-item>
         </a-form>
-    </div>
 </template>
 
 <script lang="ts">
-import {
-  Component, Prop, Vue, Watch,
-} from 'vue-property-decorator'
+import { Component, Prop, Vue } from 'vue-property-decorator'
 // eslint-disable-next-line import/extensions,import/no-unresolved
-import { WrappedFormUtils } from 'ant-design-vue/types/form/form'
-import { Col, message, Row } from 'ant-design-vue'
-// eslint-disable-next-line import/extensions,import/no-unresolved
-import { FormItem } from 'ant-design-vue/types/form/form-item'
-import DynamicFormItem from '@/components/form/DynamicFormItem.vue';
-import { AntField, BaseField, Fields } from '@/lib/types/common'
-import { FieldTypes } from '@/lib/types/enum'
-import InputPicker from './advanced/InputPicker.vue'
-import InputSwitch from './basic/InputSwitch.vue'
-import InputText from './basic/InputText.vue'
-import InputEditor from './advanced/InputEditor.vue'
-import InputRadio from '@/components/form/basic/InputRadio.vue'
-import InputTree from '@/components/form/advanced/InputTree.vue'
-import InputCheckers from '@/components/form/basic/InputCheckers.vue'
+import { Button, Form } from 'ant-design-vue'
+import { AntField, Fields } from '@/lib/types/common'
 import { messages } from '@/components/form/messages-zh'
+import { FieldTypes } from '@/lib/types/enum'
+import 'ant-design-vue/dist/antd.css';
+import { WrappedFormUtils } from 'ant-design-vue/types/form/form'
 
-    interface InlineLayout {
-    formRow: Row
-    formCol: Col
-}
-interface DefaultLayout {
-    formItem: FormItem
-}
-export type DynamicFormLayout = InlineLayout | DefaultLayout
-/**
- * 组件必须有:prop:value 和 emit('change')
- *
- * 参考自定义表单控件
- 自定义或第三方的表单控件，也可以与 Form 组件一起使用。只要该组件遵循以下的约定：
+Vue.use(Form).use(Button)
 
- 提供受控属性 value 或其它与 valuePropName-参数) 的值同名的属性。
- 提供 onChange 事件或 trigger-参数) 的值同名的事件。
- 不能是函数式组件。
- */
-@Component({
-  components: {
-
-    DynamicFormItem,
-  },
-})
+    @Component({
+      components: {
+      },
+    })
 export default class DynamicForm extends Vue {
     @Prop({
       type: Object,
@@ -89,7 +59,34 @@ export default class DynamicForm extends Vue {
     })
     readonly btnLoading!: boolean
 
-    form: Vue | WrappedFormUtils | null = null
+    form: Vue |WrappedFormUtils| null = null
+
+    get componentMap() {
+      return {
+        [FieldTypes.text]: () => import('./basic/InputText.vue'),
+        [FieldTypes.number]: () => import('./basic/InputText.vue'),
+        [FieldTypes.textarea]: () => import('./basic/InputText.vue'),
+        [FieldTypes.password]: () => import('./basic/InputText.vue'),
+        [FieldTypes.picker]: 'InputPicker',
+        [FieldTypes.pickers]: 'InputPicker',
+        [FieldTypes.pickerTags]: 'InputPicker',
+        [FieldTypes.search]: 'InputPicker',
+        // [FieldTypes.date]: 'InputTimer',
+        // [FieldTypes.time]: 'InputTimer',
+        // [FieldTypes.datetime]: 'InputTimer',
+        // [FieldTypes.year]: 'InputTimer',
+        [FieldTypes.radio]: 'InputRadio',
+        [FieldTypes.checkers]: 'InputCheckers',
+        [FieldTypes.switch]: 'InputSwitch',
+        [FieldTypes.img]: 'InputImg',
+        [FieldTypes.video]: 'InputImg',
+        // [FieldTypes.code]: 'InputCode',
+        // [FieldTypes.contact]: 'InputContact',
+        // [FieldTypes.address]: 'InputAddress',
+        [FieldTypes.editor]: 'InputEditor',
+        [FieldTypes.tree]: 'InputTree',
+      }
+    }
 
     created() {
       this.form = this.$form.createForm(this, {

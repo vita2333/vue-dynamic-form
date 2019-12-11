@@ -1,8 +1,6 @@
-import { Component, Prop, Vue } from 'vue-property-decorator'
-import { FieldDecoratorOptions, ValidationRule } from 'ant-design-vue/types/form/form'
-import { FormItem } from 'ant-design-vue/types/form/form-item'
-import { Rules } from '@/lib/types/enum'
-import { BaseField } from '@/lib/types/common'
+import {Component, Prop, Vue} from 'vue-property-decorator'
+import {FieldDecoratorOptions, ValidationRule} from 'ant-design-vue/types/form/form'
+import {BaseField} from '@/lib/types/common'
 
 @Component({
   components: {},
@@ -26,12 +24,6 @@ export default class InputMixin extends Vue {
     })
     public fieldDefaultValue?: any
 
-    @Prop({
-      type: Object,
-      default() {
-        return {}
-      },
-    })
     public cellStyle?: any
 
     @Prop({
@@ -39,13 +31,8 @@ export default class InputMixin extends Vue {
     })
     public hasError?: boolean
 
-    @Prop({
-      type: Object,
-    })
-    public layout!: FormItem
-
     protected get required() {
-      return !this.field.disabled && this.field.rules && this.field.rules.includes(Rules.required)
+      return !this.field.disabled && this.field.required
     }
 
     get initialValue() {
@@ -68,6 +55,7 @@ export default class InputMixin extends Vue {
           required: this.required || false,
           message: `请输入${this.field.label}`,
         },
+        ...(this.field.rules || []),
       ]
       return {
         initialValue: this.initialValue,

@@ -27,7 +27,7 @@ export function newMessages() {
     string: {
       len: '%s长度应该是%s位',
       min: '%s长度最少%s位',
-      max: '%s长度最多%s位',
+      max: '(%s)长度最多%s位',
       range: '%s长度应该在%s和%s位之间',
     },
     number: {

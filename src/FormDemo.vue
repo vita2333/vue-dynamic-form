@@ -1,5 +1,6 @@
 <template>
     <dynamic-form
+      style="padding: 50px;"
         :on-values-change="onValuesChange"
         :on-fields-change="onFieldsChange"
         ref="form"
@@ -12,32 +13,54 @@
 import { Component, Vue } from 'vue-property-decorator'
 import DynamicForm from '@/components/form/DynamicForm.vue'
 import { AntField, Fields } from '@/lib/types/common'
-import { FieldTypes, Rules } from '@/lib/types/enum'
+import { FieldTypes } from '@/lib/types/enum'
 
-@Component({
-  components: {
-    DynamicForm,
-  },
-})
+    @Component({
+      components: {
+        DynamicForm,
+      },
+    })
 export default class Test extends Vue {
     defForm: any = {}
 
     fields: Fields = {
-      text: {
-        label: '文字',
-        type: FieldTypes.custom,
-        rules: [Rules.required],
-        options: { rules: [{ required: true }, { max: 4 }] },
-        unit: 'sdfdsf',
-        desc: 'sdfsdfdsf',
-        component: () => 'AInput',
+      base: {
+        label: '基本输入框',
+        type: FieldTypes.text,
+        required: true,
+        rules: [{ max: 200 }],
+        desc: '必填,最多4个字符',
+        unit: '单位',
+      },
+      number: {
+        label: '数字',
+        type: FieldTypes.number,
+        required: true,
+        desc: '这是一段说明',
+        rules: [{ max: 200 }],
+        unit: '单位',
+      },
+      textarea: {
+        label: '文本',
+        type: FieldTypes.textarea,
+        required: true,
+        desc: '这是一段说明',
+        rules: [{ max: 200 }],
+      },
+      password: {
+        label: '密码',
+        type: FieldTypes.password,
+        required: true,
+        desc: '这是一段说明',
+        rules: [{ max: 200 }],
       },
     }
 
     mounted() {
       setTimeout(() => {
         this.defForm = {
-          text: 'sdfdsfdsfdsfsf',
+          base: 'sdfdsfdsfdsfsf',
+          number: 12323,
         }
       }, 2000)
     }
